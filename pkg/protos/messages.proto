@@ -5,15 +5,16 @@ package protos;
 option go_package = "github.com/foto-leistenschneider/admin-panel/pkg/protos";
 
 message Job {
-  string environment = 1;
-  string command = 2;
-  string output = 3;
-  JobScope scope = 4;
-  JobStatus status = 5;
+  uint64 id = 1;
+  string environment = 2;
+  string command = 3;
+  string output = 4;
+  JobScope scope = 5;
+  JobStatus status = 6;
 }
 
 message JobUpdate {
-  int64 job_id = 1;
+  uint64 job_id = 1;
   JobStatus new_status = 2;
   string output = 3;
 }
