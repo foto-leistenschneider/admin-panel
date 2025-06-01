@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package protos;
+
+option go_package = "github.com/foto-leistenschneider/admin-panel/pkg/protos";
+
+message Job {
+  string environment = 1;
+  string command = 2;
+  string output = 3;
+  JobScope scope = 4;
+  JobStatus status = 5;
+}
+
+message JobUpdate {
+  int64 job_id = 1;
+  JobStatus new_status = 2;
+  string output = 3;
+}
+
+message JobUpdates {
+  repeated JobUpdate job_updates = 1;
+}
+
+message Jobs {
+  repeated Job jobs = 1;
+}
+
+message Ping {
+  string name = 1;
+  repeated JobUpdate job_updates = 2;
+}
+
+enum JobScope {
+  JOB_SCOPE_SHELL = 0;
+  JOB_SCOPE_DATABASE = 1;
+}
+
+enum JobStatus {
+  JOB_STATUS_PENDING = 0;
+  JOB_STATUS_RUNNING = 1;
+  JOB_STATUS_DONE = 2;
+  JOB_STATUS_FAILED = 3;
+}

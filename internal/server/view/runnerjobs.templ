@@ -1,0 +1,24 @@
+package view
+
+import "github.com/foto-leistenschneider/admin-panel/internal/runners"
+
+templ RunnerJobs() {
+	@layout() {
+		if runnerName, ok := ctx.Value("runner").(string); ok {
+			<h1>{ runnerName }</h1>
+			if runner, ok := runners.Register[runnerName]; ok {
+				<ul>
+					for _, job := range runner.Jobs {
+						<li>
+							<p>{ job.Environment }</p>
+							<p>{ job.Command }</p>
+							<p>{ job.Output }</p>
+						</li>
+					}
+				</ul>
+			}
+		} else {
+			<h1>Unknown Runner</h1>
+		}
+	}
+}

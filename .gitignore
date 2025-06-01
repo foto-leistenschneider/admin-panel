@@ -1,0 +1,7 @@
+.DS_Store
+node_modules/
+tmp/
+.env
+*_templ.go
+*.min.css
+*.min.js
