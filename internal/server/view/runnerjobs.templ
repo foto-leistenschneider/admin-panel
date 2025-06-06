@@ -1,24 +1,72 @@
 package view
 
-import "github.com/foto-leistenschneider/admin-panel/internal/runners"
+import (
+	"fmt"
+	"github.com/foto-leistenschneider/admin-panel/internal/runners"
+	"github.com/foto-leistenschneider/admin-panel/pkg/protos"
+)
 
 templ RunnerJobs() {
 	@layout() {
 		if runnerName, ok := ctx.Value("runner").(string); ok {
 			<h1>{ runnerName }</h1>
 			if runner, ok := runners.Register[runnerName]; ok {
-				<ul>
-					for _, job := range runner.Jobs {
-						<li>
-							<p>{ job.Environment }</p>
-							<p>{ job.Command }</p>
-							<p>{ job.Output }</p>
+				<details class="block py-2 border-b border-gray-800">
+					<summary class="cursor-pointer">Add Job</summary>
+					<form action={ templ.SafeURL(fmt.Sprintf("/api/runners/%s/jobs", runnerName)) } method="post">
+						<label class="input">
+							Command
+							<input type="text" name="command" required/>
+						</label>
+						<label class="input">
+							Scope
+							<select name="scope" required>
+								<option value="">Select Scope</option>
+								for i, s := range protos.JobScope_name {
+									<option value={ i }>{ s }</option>
+								}
+							</select>
+						</label>
+						<input class="btn btn-primary block mt-4" type="submit" value="Add Job"/>
+					</form>
+				</details>
+				<ul class="w-full">
+					for _, job := range runner.GetJobs() {
+						<li class="block w-full my-4 border border-gray-800 rounded-md border-solid py-2 px-3 mx-auto max-w-5xl">
+							<div class="flex flex-row gap-2 w-full justify-between">
+								<div class="block">
+									switch job.Status {
+										case protos.JobStatus_Pending:
+											<span class="inline-block bg-yellow-700 text-white rounded-md py-1 px-2">pending</span>
+										case protos.JobStatus_Running:
+											<span class="inline-block bg-blue-700 text-white rounded-md py-1 px-2">running</span>
+										case protos.JobStatus_Done:
+											<span class="inline-block bg-green-700 text-white rounded-md py-1 px-2">done</span>
+										case protos.JobStatus_Failed:
+											<span class="inline-block bg-red-700 text-white rounded-md py-1 px-2">failed</span>
+									}
+									<b class="inline-block font-bold text-white ml-2">{ job.Id }</b>
+									<p class="block text-gray-500 text-xs mt-2">{ job.Command }</p>
+								</div>
+								<div class="block">
+									<p class="text-gray-500"><img src={ GetServePath("calendar.svg") } class="inline-block h-6"/> { timeSince(job.CreatedAt) }</p>
+									<p class="text-gray-500 mt-2"><img src={ GetServePath("timer.svg") } class="inline-block h-6"/> { timeBetween(job.CreatedAt, job.UpdatedAt) }</p>
+								</div>
+							</div>
+							if job.Output != "" {
+								<details class="mt-2 col-span-2">
+									<summary class="cursor-pointer">Output</summary>
+									<pre class="whitespace-pre-wrap font-mono bg-gray-900 text-gray-100 p-4 rounded-md">{ job.Output }</pre>
+								</details>
+							}
 						</li>
 					}
 				</ul>
+			} else {
+				<p>Unknown Runner { runnerName }</p>
 			}
 		} else {
-			<h1>Unknown Runner</h1>
+			<h1>No runner defined</h1>
 		}
 	}
 }

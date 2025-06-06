@@ -11,14 +11,16 @@ templ Intex() {
 		<h1>Admin Panel</h1>
 		<h2>Runners</h2>
 		<ul>
-			for _, runner := range runners.Register {
+			for id, runner := range runners.Register {
 				<li>
-					{ runner.Name }
-					if runner.LastPing.Add(time.Minute * 5).Before(time.Now()) {
-						<span class="bg-red-700 text-white rounded-md py-1 px-2">offline</span>
-					} else {
-						<span class="bg-green-700 text-white rounded-md py-1 px-2">online</span>
-					}
+					<a href={ templ.SafeURL("/runners/" + id) }>
+						{ runner.Name }
+						if runner.LastPing.Add(time.Second * 10).Before(time.Now()) {
+							<span class="bg-red-700 text-white rounded-md py-1 px-2">offline</span>
+						} else {
+							<span class="bg-green-700 text-white rounded-md py-1 px-2">online</span>
+						}
+					</a>
 				</li>
 			}
 		</ul>

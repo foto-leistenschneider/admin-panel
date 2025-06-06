@@ -4,17 +4,20 @@ package protos;
 
 option go_package = "github.com/foto-leistenschneider/admin-panel/pkg/protos";
 
+import "google/protobuf/timestamp.proto";
+
 message Job {
-  uint64 id = 1;
-  string environment = 2;
-  string command = 3;
-  string output = 4;
-  JobScope scope = 5;
-  JobStatus status = 6;
+  string id = 1;
+  string command = 2;
+  string output = 3;
+  JobScope scope = 4;
+  JobStatus status = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
 }
 
 message JobUpdate {
-  uint64 job_id = 1;
+  string job_id = 1;
   JobStatus new_status = 2;
   string output = 3;
 }
@@ -33,13 +36,13 @@ message Ping {
 }
 
 enum JobScope {
-  JOB_SCOPE_SHELL = 0;
-  JOB_SCOPE_DATABASE = 1;
+  Shell = 0;
+  Database = 1;
 }
 
 enum JobStatus {
-  JOB_STATUS_PENDING = 0;
-  JOB_STATUS_RUNNING = 1;
-  JOB_STATUS_DONE = 2;
-  JOB_STATUS_FAILED = 3;
+  Pending = 0;
+  Running = 1;
+  Done = 2;
+  Failed = 3;
 }

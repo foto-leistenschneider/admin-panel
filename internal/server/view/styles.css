@@ -1,1 +1,24 @@
 @import "tailwindcss";
+
+@layer base {
+  label.input {
+    @apply block w-full text-gray-500 text-sm;
+  }
+
+  input.input,
+  select.input,
+  textarea.input,
+  label.input > input,
+  label.input > select,
+  label.input > textarea {
+    @apply block border border-gray-300 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm user-invalid:border-red-500;
+  }
+
+  .btn {
+    @apply rounded-md py-2 px-3 text-white cursor-pointer focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm user-invalid:border-red-500;
+  }
+
+  .btn-primary {
+    @apply bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 disabled:opacity-25 disabled:cursor-not-allowed;
+  }
+}
