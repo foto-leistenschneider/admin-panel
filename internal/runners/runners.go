@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/foto-leistenschneider/admin-panel/pkg/protos"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var Register = map[string]*Runner{}
@@ -61,6 +62,7 @@ func Ping(ping *protos.Ping) (*protos.Jobs, error) {
 			}
 			job.Status = jobUpdate.NewStatus
 			job.Output = jobUpdate.Output
+			job.UpdatedAt = timestamppb.Now()
 		}
 		Register[ping.Name] = r
 
