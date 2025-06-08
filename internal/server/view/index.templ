@@ -6,7 +6,7 @@ import (
 	"github.com/foto-leistenschneider/admin-panel/internal/runners"
 )
 
-templ Intex() {
+templ Index() {
 	@layout() {
 		<h1>Admin Panel</h1>
 		if u, ok := getUser(ctx); ok && u != nil {

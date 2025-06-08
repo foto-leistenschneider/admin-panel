@@ -25,17 +25,21 @@ services:
       - traefik_network
 
   traefik:
-    image: traefik:latest
+    image: traefik:3
+    restart: always
     ports:
       - "80:80"
       - "443:443"
+      - "443:443/udp"
     volumes:
-      - ./reverse-proxy/dynamic.yaml:/dynamic.yaml:ro
       - ./reverse-proxy/traefik.yaml:/traefik.yaml:ro
-      - "./acme.json:/letsencrypt/acme.json"
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - ./reverse-proxy/dynamic.yaml:/dynamic.yaml:ro
+      - ./letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     command:
       - --configFile=/traefik.yaml
+    environment:
+      - DOCKER_NETWORK=traefik_network
     networks:
       - traefik_network
 

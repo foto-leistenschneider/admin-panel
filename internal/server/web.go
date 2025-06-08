@@ -11,7 +11,7 @@ import (
 )
 
 func registerRoutes() {
-	http.HandleFunc("/", indexHandler(view.Intex()))
+	http.HandleFunc("/", indexHandler(view.Index()))
 	http.HandleFunc("/runners/{runner}", templRenderHandler(view.RunnerJobs()))
 	http.HandleFunc("/api/ping", runnerPingHandler)
 	http.HandleFunc("/api/runners/{runner}/jobs", runnerJobsHandler)
@@ -19,6 +19,7 @@ func registerRoutes() {
 	http.HandleFunc("/api/login", loginHandler)
 	http.HandleFunc("/api/login_callback", loginCallbackHandler)
 	http.HandleFunc("/api/logout", logoutHandler)
+	http.HandleFunc("/health", healthHandler)
 }
 
 func templRenderHandler(component templ.Component) http.HandlerFunc {
@@ -93,4 +94,9 @@ func (c myContext) Value(key any) any {
 		}
 	}
 	return c.ctx.Value(key)
+}
+
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("OK"))
+	w.WriteHeader(http.StatusOK)
 }
