@@ -1,30 +1,25 @@
 ---
 http:
   routers:
+    http-redirect:
+      rule: "HostRegexp(`{host:.+}`)"
+      entryPoints:
+        - web
+      service: noop@internal
+      middlewares:
+        - redirect-to-https
+
     traefik-dashboard:
       rule: "Host(`traefik.admin.ergatikos.com`)"
-      service: api@internal
       entryPoints:
         - websecure
+      service: api@internal
       tls:
         certResolver: letsencrypt
 
   middlewares:
-    default-chain:
-      chain:
-        middlewares:
-          - rate-limit
-          - retry-on-failure
-    retry-on-failure:
-      retry:
-        attempts: 3
-        initialInterval: "500ms"
-    rate-limit:
-      rateLimit:
-        average: 100
-        burst: 50
-
-tls:
-  options:
-    default:
-      minVersion: VersionTLS13
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+        regex: "^(?:(?!\\.well-known/acme-challenge).)*$"

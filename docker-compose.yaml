@@ -14,13 +14,15 @@ services:
       retries: 3
       start_period: 10s
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.app-main.rule=Host(`admin.ergatikos.com`)
-      - traefik.http.services.app-main.loadbalancer.server.port=80
-      - traefik.http.routers.app-main.entrypoints=websecure
-      - traefik.http.routers.app-main.tls=true
-      - traefik.http.routers.app-main.tls.certresolver=letsencrypt
-      - traefik.docker.network=traefik_network
+      - "traefik.enable=true"
+      - "traefik.http.routers.app-main.rule=Host(`admin.ergatikos.com`)"
+      - "traefik.http.services.app-main.loadbalancer.server.port=80"
+      - "traefik.http.routers.app-main.entrypoints=websecure"
+      - "traefik.http.routers.app-main.tls=true"
+      - "traefik.http.routers.app-main.tls.certresolver=letsencrypt"
+      - "traefik.docker.network=traefik_network"
+    networks:
+      - traefik_network
 
   traefik:
     image: traefik:latest
@@ -28,12 +30,12 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./reverse-proxy/dynamic.yaml:/dynamic.yml:ro
-      - ./reverse-proxy/traefik.yaml:/traefik.yml:ro
+      - ./reverse-proxy/dynamic.yaml:/dynamic.yaml:ro
+      - ./reverse-proxy/traefik.yaml:/traefik.yaml:ro
       - "./acme.json:/letsencrypt/acme.json"
       - "/var/run/docker.sock:/var/run/docker.sock"
-    environment:
-      - DOCKER_NETWORK=traefik_network
+    command:
+      - --configFile=/traefik.yaml
     networks:
       - traefik_network
 
