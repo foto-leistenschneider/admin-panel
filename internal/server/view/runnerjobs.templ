@@ -15,17 +15,17 @@ templ RunnerJobs() {
 					<summary class="cursor-pointer">Add Job</summary>
 					<form action={ templ.SafeURL(fmt.Sprintf("/api/runners/%s/jobs", runnerName)) } method="post">
 						<label class="input">
-							Command
-							<input type="text" name="command" required/>
-						</label>
-						<label class="input">
 							Scope
-							<select name="scope" required>
+							<select name="scope" required onchange="const commandInputEl = document.getElementById('command_input'); commandInputEl.required = this.value !== 'Backup'; commandInputEl.parentElement.style.display = (this.value === 'Backup' ? 'none' : 'block')">
 								<option value="">Select Scope</option>
-								for i, s := range protos.JobScope_name {
-									<option value={ i }>{ s }</option>
+								for _, s := range protos.JobScope_name {
+									<option value={ s }>{ s }</option>
 								}
 							</select>
+						</label>
+						<label class="input">
+							Command
+							<input type="text" name="command" id="command_input"/>
 						</label>
 						<input class="btn btn-primary block mt-4" type="submit" value="Add Job"/>
 					</form>

@@ -19,6 +19,7 @@ func registerRoutes() {
 	http.HandleFunc("/api/login", loginHandler)
 	http.HandleFunc("/api/login_callback", loginCallbackHandler)
 	http.HandleFunc("/api/logout", logoutHandler)
+	http.HandleFunc("/api/backup/{runner}/{filename}", backupHandler)
 	http.HandleFunc("/health", healthHandler)
 }
 

@@ -13,6 +13,7 @@ var (
 	WorkosClientId       string
 	WorkosApiKey         string
 	WorkosCookiePassword string
+	BackupDir            string
 )
 
 func init() {
@@ -47,6 +48,13 @@ func init() {
 		fmt.Fprintf(os.Stderr, "WORKOS_COOKIE_PASSWORD is not set")
 		os.Exit(1)
 	}
+
+	if backupDir, ok := os.LookupEnv("BACKUP_DIR"); ok {
+		BackupDir = backupDir
+	} else {
+		BackupDir = "./backups"
+	}
+	_ = os.MkdirAll(BackupDir, 0755)
 }
 
 func loadEnvFile() {

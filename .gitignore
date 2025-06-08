@@ -5,3 +5,4 @@ tmp/
 *_templ.go
 *.min.css
 *.min.js
+backups/
