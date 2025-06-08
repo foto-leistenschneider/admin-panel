@@ -38,6 +38,7 @@ message Ping {
 enum JobScope {
   Shell = 0;
   Database = 1;
+  Backup = 2;
 }
 
 enum JobStatus {
