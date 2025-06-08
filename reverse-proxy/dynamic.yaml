@@ -2,7 +2,7 @@
 http:
   routers:
     traefik-dashboard:
-      rule: "Host(`traefik.ergatikos.com`)"
+      rule: "Host(`traefik.admin.ergatikos.com`)"
       service: api@internal
       entryPoints:
         - websecure
