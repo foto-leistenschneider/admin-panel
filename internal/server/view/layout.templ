@@ -10,6 +10,11 @@ templ layout() {
 			<link rel="stylesheet" href={ GetServePath("styles.min.css") }/>
 		</head>
 		<body class="bg-neutral-950 text-neutral-50">
+			if u, ok := getUser(ctx); ok && u != nil {
+				<img src={ u.ProfilePictureURL } alt={ u.FirstName } class="w-10 h-10 rounded-full fixed top-2 right-2"/>
+			} else {
+				<a href="/api/login" class="text-white underline fixed top-2 right-2">Login</a>
+			}
 			{ children... }
 		</body>
 	</html>
