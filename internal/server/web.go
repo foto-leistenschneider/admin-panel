@@ -7,6 +7,7 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/foto-leistenschneider/admin-panel/internal/server/view"
+	"github.com/workos/workos-go/v4/pkg/usermanagement"
 )
 
 func registerRoutes() {
@@ -15,6 +16,9 @@ func registerRoutes() {
 	http.HandleFunc("/api/ping", runnerPingHandler)
 	http.HandleFunc("/api/runners/{runner}/jobs", runnerJobsHandler)
 	http.HandleFunc("/robots.txt", robotsTxtHandler)
+	http.HandleFunc("/api/login", loginHandler)
+	http.HandleFunc("/api/login_callback", loginCallbackHandler)
+	http.HandleFunc("/api/logout", logoutHandler)
 }
 
 func templRenderHandler(component templ.Component) http.HandlerFunc {
@@ -27,7 +31,8 @@ func templRenderHandler(component templ.Component) http.HandlerFunc {
 func indexHandler(indexComponent templ.Component) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
-			_ = indexComponent.Render(r.Context(), w)
+			ctx := myContextFromRequest(r)
+			_ = indexComponent.Render(ctx, w)
 		} else {
 			view.EmbedFSHandler(w, r)
 		}
@@ -47,13 +52,22 @@ func robotsTxtHandler(w http.ResponseWriter, _ *http.Request) {
 
 type myContext struct {
 	ctx     context.Context
+	user    *usermanagement.User
 	request *http.Request
 }
 
 func myContextFromRequest(r *http.Request) context.Context {
-	return myContext{
-		ctx:     r.Context(),
-		request: r,
+	if user, ok := getAuthenticatedUser(r); ok {
+		return myContext{
+			ctx:     r.Context(),
+			user:    &user,
+			request: r,
+		}
+	} else {
+		return myContext{
+			ctx:     r.Context(),
+			request: r,
+		}
 	}
 }
 
@@ -71,6 +85,9 @@ func (c myContext) Err() error {
 
 func (c myContext) Value(key any) any {
 	if keyString, ok := key.(string); ok {
+		if keyString == "user" {
+			return c.user
+		}
 		if value := c.request.PathValue(keyString); value != "" {
 			return value
 		}

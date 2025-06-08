@@ -1,0 +1,30 @@
+---
+http:
+  routers:
+    traefik-dashboard:
+      rule: "Host(`traefik.ergatikos.com`)"
+      service: api@internal
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+
+  middlewares:
+    default-chain:
+      chain:
+        middlewares:
+          - rate-limit
+          - retry-on-failure
+    retry-on-failure:
+      retry:
+        attempts: 3
+        initialInterval: "500ms"
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 50
+
+tls:
+  options:
+    default:
+      minVersion: VersionTLS13

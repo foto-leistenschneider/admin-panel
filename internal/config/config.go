@@ -9,7 +9,10 @@ import (
 )
 
 var (
-	ServerAddress string
+	ServerAddress        string
+	WorkosClientId       string
+	WorkosApiKey         string
+	WorkosCookiePassword string
 )
 
 func init() {
@@ -22,6 +25,27 @@ func init() {
 			os.Exit(1)
 		}
 		ServerAddress = fmt.Sprintf(":%d", port)
+	}
+
+	if workosClientId, ok := os.LookupEnv("WORKOS_CLIENT_ID"); ok {
+		WorkosClientId = workosClientId
+	} else {
+		fmt.Fprintf(os.Stderr, "WORKOS_CLIENT_ID is not set")
+		os.Exit(1)
+	}
+
+	if workosApiKey, ok := os.LookupEnv("WORKOS_API_KEY"); ok {
+		WorkosApiKey = workosApiKey
+	} else {
+		fmt.Fprintf(os.Stderr, "WORKOS_API_KEY is not set")
+		os.Exit(1)
+	}
+
+	if workosCookiePassword, ok := os.LookupEnv("WORKOS_COOKIE_PASSWORD"); ok {
+		WorkosCookiePassword = workosCookiePassword
+	} else {
+		fmt.Fprintf(os.Stderr, "WORKOS_COOKIE_PASSWORD is not set")
+		os.Exit(1)
 	}
 }
 

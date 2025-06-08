@@ -1,6 +1,7 @@
 package view
 
 import (
+	"context"
 	"crypto/md5"
 	"embed"
 	"encoding/base64"
@@ -14,6 +15,7 @@ import (
 	unixpath "path"
 
 	"github.com/a-h/templ"
+	"github.com/workos/workos-go/v4/pkg/usermanagement"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -120,4 +122,15 @@ func timeBetween(start, end *timestamppb.Timestamp) string {
 	} else {
 		return fmt.Sprintf("%d seconds", int(span.Seconds()))
 	}
+}
+
+func getUser(ctx context.Context) (*usermanagement.User, bool) {
+	v := ctx.Value("user")
+	if v == nil {
+		return nil, false
+	}
+	if user, ok := v.(*usermanagement.User); ok {
+		return user, true
+	}
+	return nil, false
 }
