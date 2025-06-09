@@ -45,7 +45,8 @@ templ RunnerJobs() {
 										case protos.JobStatus_Failed:
 											<span class="inline-block bg-red-700 text-white rounded-md py-1 px-2">failed</span>
 									}
-									<b class="inline-block font-bold text-white ml-2">{ job.Id }</b>
+									<span class="inline-block text-white ml-2">{ job.Id }</span>
+									<span class="inline-block text-black text-xs bg-blue-700 rounded-md py-1 px-2 ml-2">{ job.Scope.String() }</span>
 									<p class="block text-gray-500 text-xs mt-2">{ job.Command }</p>
 								</div>
 								<div class="block">
