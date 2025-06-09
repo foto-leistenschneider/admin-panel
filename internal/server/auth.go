@@ -18,12 +18,6 @@ import (
 	"github.com/workos/workos-go/v4/pkg/usermanagement"
 )
 
-type contextKey string
-
-const (
-	userContextKey contextKey = "user"
-)
-
 func init() {
 	sso.Configure(config.WorkosApiKey, config.WorkosClientId)
 	organizations.SetAPIKey(config.WorkosApiKey)
