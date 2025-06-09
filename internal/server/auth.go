@@ -1,10 +1,10 @@
 package server
 
 import (
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
-	"math/rand"
 	"net/http"
 	"time"
 
