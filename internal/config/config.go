@@ -26,6 +26,9 @@ func init() {
 			os.Exit(1)
 		}
 		ServerAddress = fmt.Sprintf(":%d", port)
+	} else {
+		fmt.Fprintf(os.Stderr, "PORT is not set")
+		os.Exit(1)
 	}
 
 	if workosClientId, ok := os.LookupEnv("WORKOS_CLIENT_ID"); ok {
