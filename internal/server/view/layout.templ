@@ -8,6 +8,7 @@ templ layout() {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 			<title>Admin Panel</title>
 			<link rel="stylesheet" href={ GetServePath("styles.min.css") }/>
+			<link rel="icon" href={ GetServePath("favicon.svg") } type="image/svg+xml" sizes="any"/>
 		</head>
 		<body class="bg-neutral-950 text-neutral-50">
 			if u, ok := getUser(ctx); ok && u != nil {
