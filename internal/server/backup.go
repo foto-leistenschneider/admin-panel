@@ -13,6 +13,7 @@ import (
 )
 
 func backupHandler(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
 	fileName := filepath.Join(config.BackupDir, r.PathValue("filename"))
 
 	if runner, ok := runners.Register[r.PathValue("runner")]; !ok {
@@ -23,7 +24,10 @@ func backupHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "job not found", http.StatusNotFound)
 			return
 		} else if job.Status >= protos.JobStatus_Done {
-			http.Error(w, "job not running", http.StatusNotFound)
+			http.Error(w, "job not running", http.StatusAlreadyReported)
+			return
+		} else if job.Scope != protos.JobScope_Backup {
+			http.Error(w, "job is not a backup job", http.StatusConflict)
 			return
 		}
 	}

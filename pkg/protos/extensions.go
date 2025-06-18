@@ -1,6 +1,9 @@
 package protos
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 func ParseJobScope(s string) (JobScope, error) {
 	if js, ok := JobScope_value[s]; ok {
@@ -13,5 +16,5 @@ func ParseJobScope(s string) (JobScope, error) {
 	if _, ok := JobScope_name[int32(i)]; ok {
 		return JobScope(i), nil
 	}
-	return 0, nil
+	return 0, fmt.Errorf("job scope %d not found", i)
 }

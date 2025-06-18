@@ -41,6 +41,7 @@ func getLoginRedirectURl(r *http.Request) string {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
 	codeVerifierBytes := make([]byte, 32)
 	if _, err := rand.Read(codeVerifierBytes); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -79,6 +80,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginCallbackHandler(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
 	code := r.URL.Query().Get("code")
 	if code == "" {
 		http.Error(w, "code is empty", http.StatusBadRequest)
@@ -139,6 +141,7 @@ func loginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
 	http.SetCookie(w, &http.Cookie{
 		Name:   "code_verifier",
 		Value:  "",

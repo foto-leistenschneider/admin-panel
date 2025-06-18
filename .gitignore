@@ -6,3 +6,6 @@ tmp/
 *.min.css
 *.min.js
 backups/
+*.db
+*.db-shm
+*.db-wal

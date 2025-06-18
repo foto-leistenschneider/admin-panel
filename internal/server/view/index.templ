@@ -4,13 +4,15 @@ import (
 	"time"
 
 	"github.com/foto-leistenschneider/admin-panel/internal/runners"
+	"github.com/foto-leistenschneider/admin-panel/internal/db"
+	"github.com/foto-leistenschneider/admin-panel/pkg/protos"
 )
 
 templ Index() {
 	@layout() {
-		<h1>Admin Panel</h1>
+		<h1 class="text-4xl font-bold">Admin Panel</h1>
 		if u, ok := getUser(ctx); ok && u != nil {
-			<h2>Runners</h2>
+			<h2 class="text-2xl font-bold">Runners</h2>
 			<ul>
 				for id, runner := range runners.Register {
 					<li>
@@ -25,6 +27,67 @@ templ Index() {
 					</li>
 				}
 			</ul>
+			<h2 class="text-2xl font-bold">Tasks</h2>
+			if ts, err := db.Q.GetTasks(ctx); err != nil {
+				<p>Failed to fetch tasks: <pre><code>{ err.Error() }</code></pre></p>
+			} else {
+				<details class="mt-4">
+					<summary class="cursor-pointer">Add Task</summary>
+					<form action="/api/tasks" method="post">
+						<label class="input">
+							Description
+							<input type="text" name="description" required/>
+						</label>
+						<label class="input">
+							Schedule (Cron)
+							<input type="text" name="schedule" required/>
+						</label>
+						<label class="input">
+							Selector
+							<input type="text" name="selector" placeholder="*"/>
+						</label>
+						<label class="input">
+							Scope
+							<select name="scope" required onchange="const commandInputEl = document.getElementById('command_input'); commandInputEl.required = this.value !== 'Backup'; commandInputEl.parentElement.style.display = (this.value === 'Backup' ? 'none' : 'block')">
+								<option value="">Select Scope</option>
+								for _, s := range protos.JobScope_name {
+									<option value={ s }>{ s }</option>
+								}
+							</select>
+						</label>
+						<label class="input">
+							Command
+							<input type="text" name="command" id="command_input"/>
+						</label>
+						<input class="btn btn-primary block mt-4" type="submit" value="Add Task"/>
+					</form>
+				</details>
+				<ul>
+					for _, t := range ts {
+						<li class="block border-l-2 border-gray-700 py-2 px-3 my-4">
+							<p class="font-bold">{ t.Description }</p>
+							<p class="text-gray-500">{ t.Scope }</p>
+							<p class="text-gray-500">at { t.Schedule }</p>
+							<p><button class="btn btn-danger" data-id={ t.ID } onclick="deleteTask(this.dataset.id)">Delete</button></p>
+						</li>
+					}
+				</ul>
+				<script>
+                    function deleteTask(id) {
+                        fetch("/api/tasks", {
+                            method: "DELETE",
+                            body: id,
+                        }).then(response => {
+                            if (response.ok) {
+                                window.location.reload();
+                            } else {
+                                response.text().then(text => alert(text));
+                                throw new Error("Failed to delete task");
+                            }
+                        });
+                    }
+                </script>
+			}
 		} else {
 			<p>You need to be <a class="underline" href="/api/login">logged in</a> to view this page.</p>
 		}

@@ -2,14 +2,12 @@ package server
 
 import (
 	"fmt"
-	"github.com/google/uuid"
 	"io"
 	"net/http"
 
 	"github.com/foto-leistenschneider/admin-panel/internal/runners"
 	"github.com/foto-leistenschneider/admin-panel/pkg/protos"
 	"google.golang.org/protobuf/proto"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func runnerPingHandler(w http.ResponseWriter, r *http.Request) {
@@ -55,6 +53,11 @@ func runnerJobsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func addJobHandler(w http.ResponseWriter, r *http.Request) {
+	if !isAuthenticated(r) {
+		http.Error(w, "not authenticated", http.StatusUnauthorized)
+		return
+	}
+
 	runnerName := r.PathValue("runner")
 	if runnerName == "" {
 		http.Error(w, "runner name is empty", http.StatusBadRequest)
@@ -72,22 +75,10 @@ func addJobHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	scope, err := protos.ParseJobScope(r.Form.Get("scope"))
-	if err != nil {
-		http.Error(w, fmt.Sprintf("invalid scope: %s", err), http.StatusBadRequest)
+	if err := runner.AddJob(r.Form.Get("scope"), r.Form.Get("command")); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	job := protos.Job{
-		Id:        uuid.NewString(),
-		Command:   r.Form.Get("command"),
-		Scope:     scope,
-		Status:    protos.JobStatus_Pending,
-		CreatedAt: timestamppb.Now(),
-		UpdatedAt: timestamppb.Now(),
-	}
-
-	runner.Jobs[job.Id] = &job
 
 	http.Redirect(w, r, fmt.Sprintf("/runners/%s", runnerName), http.StatusFound)
 }

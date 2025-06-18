@@ -3,6 +3,7 @@
     "dev": "air",
     "templ": "templ generate",
     "proto": "protoc --go_out=paths=source_relative:. ./pkg/protos/*.proto",
+    "sqlc": "sqlc generate",
     "styles": "tailwindcss -i ./internal/server/view/styles.css -o ./internal/server/view/styles.min.css --minify"
   },
   "dependencies": {

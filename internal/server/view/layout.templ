@@ -16,7 +16,9 @@ templ layout() {
 			} else {
 				<a href="/api/login" class="text-white underline fixed top-2 right-2">Login</a>
 			}
-			{ children... }
+			<main class="block max-w-4xl mx-auto px-4 py-8 bg-neutral-900 min-h-[100dvh]">
+				{ children... }
+			</main>
 		</body>
 	</html>
 }
