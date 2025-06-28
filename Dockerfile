@@ -18,6 +18,7 @@ RUN go install github.com/a-h/templ/cmd/templ@latest && \
     go build -o /app/main .
 
 FROM alpine:latest
+ENV BACKUP_DIR="/backups"
 RUN apk add --no-cache ca-certificates curl
 COPY --from=binary /app/main /app/main
 CMD ["/app/main"]

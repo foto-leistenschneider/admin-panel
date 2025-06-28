@@ -3,10 +3,12 @@ services:
     image: ghcr.io/foto-leistenschneider/admin-panel:latest
     environment:
       - PORT=80
+      - BACKUP_DIR=/backups
     env_file:
       - .env
     volumes:
       - ./data:/app/data
+      - /mnt/data/backups:/backups
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/health"]
       interval: 1m

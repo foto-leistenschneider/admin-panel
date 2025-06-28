@@ -34,9 +34,16 @@ func (q *Queries) Close() error {
 		return nil
 	}
 	if db, ok := q.db.(*sql.DB); ok {
-		return db.Close()
+		err := db.Close()
+		q.db = nil
+		return err
 	}
-	return nil
+	if db, ok := q.db.(*sql.Tx); ok {
+		err := db.Rollback()
+		q.db = nil
+		return err
+	}
+	return errors.New("db is neither *sql.DB nor *sql.Tx")
 }
 
 func (q *Queries) Ping() error {
@@ -46,5 +53,24 @@ func (q *Queries) Ping() error {
 	if db, ok := q.db.(*sql.DB); ok {
 		return db.Ping()
 	}
+	if db, ok := q.db.(*sql.Tx); ok {
+		return db.Commit()
+	}
 	return nil
+}
+
+func (q *Queries) Begin() (*Queries, error) {
+	if q.db == nil {
+		return nil, errors.New("db is nil")
+	}
+	if db, ok := q.db.(*sql.DB); ok {
+		tx, err := db.Begin()
+		if err != nil {
+			return nil, err
+		}
+		return &Queries{
+			db: tx,
+		}, nil
+	}
+	return nil, nil
 }
