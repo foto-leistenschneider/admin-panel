@@ -19,6 +19,7 @@ RUN go install github.com/a-h/templ/cmd/templ@latest && \
 
 FROM alpine:latest
 ENV BACKUP_DIR="/backups"
+WORKDIR /app
 RUN apk add --no-cache ca-certificates curl
 COPY --from=binary /app/main /app/main
 CMD ["/app/main"]
