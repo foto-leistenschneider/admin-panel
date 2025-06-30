@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"errors"
+	"os"
 
 	"github.com/charmbracelet/log"
 	_ "modernc.org/sqlite"
@@ -11,7 +12,9 @@ import (
 var Q *Queries
 
 func init() {
-	dsn := "file:data.db?_pragma=journal_mode(WAL)"
+	_ = os.MkdirAll("data", 0755)
+
+	dsn := "file:data/data.db"
 	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
@@ -21,6 +24,9 @@ func init() {
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
+
+	_, _ = db.Exec(`PRAGMA journal_mode = WAL;`)
+	_, _ = db.Exec(`PRAGMA foreign_keys = ON;`)
 
 	if err := migrate(db); err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
