@@ -26,6 +26,30 @@ services:
     networks:
       - traefik_network
 
+  vault:
+    image: hashicorp/vault:1.20
+    restart: unless-stopped
+    environment:
+      - VAULT_ADDR=http://0.0.0.0:8200
+      - VAULT_API_ADDR=http://vault.admin.ergatikos.com
+    volumes:
+      - ./vault/config:/vault/config:ro
+      - ./vault/data:/vault/data
+      - ./vault/logs:/vault/logs
+    command: ["vault", "server", "-config=/vault/config/vault.hcl"]
+    cap_add:
+      - IPC_LOCK
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vault.rule=Host(`vault.admin.ergatikos.com`)"
+      - "traefik.http.services.vault.loadbalancer.server.port=8200"
+      - "traefik.http.routers.vault.entrypoints=websecure"
+      - "traefik.http.routers.vault.tls=true"
+      - "traefik.http.routers.vault.tls.certresolver=letsencrypt"
+      - "traefik.docker.network=traefik_network"
+    networks:
+      - traefik_network
+
   traefik:
     image: traefik:3
     restart: always
