@@ -56,6 +56,9 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             mkdir -p /home/admin-panel/app/reverse-proxy/
+            mkdir -p /home/admin-panel/app/vault/config
+            mkdir -p /home/admin-panel/app/vault/data
+            mkdir -p /home/admin-panel/app/vault/logs
       - name: Generate .env file
         run: |
           cat <<EOF > .env
@@ -70,7 +73,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
-          source: ".env,docker-compose.yaml,reverse-proxy/"
+          source: ".env,docker-compose.yaml,reverse-proxy/,vault/"
           target: /home/admin-panel/app/
       - name: start compose
         uses: appleboy/ssh-action@v1.1.0
