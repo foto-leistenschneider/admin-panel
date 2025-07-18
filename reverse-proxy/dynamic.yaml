@@ -9,6 +9,67 @@ http:
       tls:
         certResolver: letsencrypt
 
+    posthog-proxy-router:
+      rule: "Host(`ph.admin.ergatikos.com`)"
+      service: posthog-proxy-service
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+      middlewares:
+        - posthog-headers
+
+    posthog-assets-router:
+      rule: "Host(`ph.admin.ergatikos.com`) && PathPrefix(`/static`)"
+      service: posthog-assets-service
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+      middlewares:
+        - posthog-assets-headers
+      priority: 100
+
+  services:
+    posthog-proxy-service:
+      loadBalancer:
+        servers:
+          - url: "https://eu.i.posthog.com"
+
+    posthog-assets-service:
+      loadBalancer:
+        servers:
+          - url: "https://eu-assets.i.posthog.com"
+
+  middlewares:
+    posthog-headers:
+      headers:
+        customRequestHeaders:
+          Host: "eu.i.posthog.com"
+
+    posthog-assets-headers:
+      headers:
+        customRequestHeaders:
+          Host: "eu-assets.i.posthog.com"
+
+    default-chain:
+      chain:
+        middlewares:
+          - rate-limit
+          - retry-on-failure
+    retry-on-failure:
+      retry:
+        attempts: 5
+        initialInterval: "500ms"
+    ip-ratelimit:
+      rateLimit:
+        average: 20
+        period: 2s
+        burst: 100
+        sourceCriterion:
+          ipStrategy:
+            depth: 0
+
 tls:
   options:
     default:
